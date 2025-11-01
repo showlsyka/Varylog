@@ -1,5 +1,5 @@
 
-module pirs (input [3:0] x, output z);
+module Zhigalkin (input [3:0] x, output z);
 
 wire y1, y2, y3, nx0, nx1, nx2, nx3;
 
@@ -25,7 +25,7 @@ supply1 vcc;
 reg [3:0] x = 0;
 wire z;
 
-pirs s1(x, z);
+Zhigalkin s1(x, z);
 
 initial begin: test
     integer i;
