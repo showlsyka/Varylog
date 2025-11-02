@@ -19,7 +19,7 @@ module scheme (input [3:0] x, output y);
   inv i4 (x[1], nx1);
 
   pmos(w1, vcc, x[3]);  pmos(w1, vcc, nx0);
-  pmos(w2, vcc, x[3]);  pmos(w2, vcc, x[2]);
+  pmos(w2, w1, x[3]);  pmos(w2, w1, x[2]);
   pmos(w3, w2,  x[2]);  pmos(w3, w2,  nx1);
   pmos(y,  w3,  nx3);   pmos(y,  w3,  nx2);  pmos(y, w3, x[0]);
 
