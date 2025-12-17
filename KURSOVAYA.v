@@ -1,3 +1,12 @@
+
+module inv(input x, output y);
+  supply1 vcc;
+  supply0 gnd;
+
+  pmos(y, vcc, x);
+  nmos(y, gnd, x);
+endmodule
+
  module johnson_to_gray(j,g);
 parameter Realization= "MDNF";
 input [3:0] j;
@@ -5,38 +14,46 @@ output[2:0] g;
 
 generate
 if(Realization =="MDNF")
-assign g[2] =j[3],
-          g[1] =j[1],
-          g[0] =~j[2]&j[0] | j[2]&~j[0];
+begin
+  supply1 vcc;
+  supply0 gnd;
+
+  wire nJ3, nJ1, nJ0, nJ2;
+  wire w1, w2, w3;
+
+  inv i1 (j[3], nJ3);
+  inv i2 (j[1], nJ1);
+  inv i3 (j[0], nJ0);
+  inv i4 (j[2], nJ2);
+
+  pmos(g[2], vcc, nJ3);
+  nmos(g[2], gnd, nJ3);
+
+  pmos(g[1], vcc, nJ1);
+  nmos(g[1], gnd, nJ1);
+
+  pmos(w1, vcc, j[2]); pmos(g[0], w1, nJ0);
+  pmos(w3, vcc, nJ2); pmos(g[0], w3, j[0]);
+
+  nmos(w2, gnd, nJ2); nmos(w2, gnd, j[0]);
+  nmos(g[0], w2, j[2]); nmos(g[0], w2, nJ0);
+end
 else if (Realization == "PIRS") begin
   assign g[2] = j[3];
   assign g[1] = j[1];
 
-  wire nJ0, nJ2;
-  wire A, B;
-  wire C;
-
-  nor (nJ0, j[0], j[0]);
-  nor (nJ2, j[2], j[2]);
-
-  // A = ~(J2 | ~J0)
-  nor (A, j[2], nJ0);
-
-  // B = ~(~J2 | J0)
-  nor (B, nJ2, j[0]);
-
-  // C = ~(A | B) 
-  nor (C, A, B);
-
-  // g0 = ~C 
-  nor (g[0], C, C);
+  assign g[0] = (~j[2] & j[0]) | (j[2] & ~j[0]);
 end
 else if(Realization == "SHEFFER") begin
-    assign g[2] = j[3];
-    assign g[1] = j[1];
+  wire g1, g2;
+  wire nJ2, nJ0;
+  wire A, B;
 
-    wire nJ2, nJ0;
-    wire A, B;
+  nand(g1, j[3], j[3]);
+  nand(g[2], g1, g1);
+
+  nand(g2, j[1], j[1]);
+  nand(g[1], g2, g2);
 
   nand (nJ0, j[0], j[0]);
   nand (nJ2, j[2], j[2]);
@@ -57,7 +74,7 @@ module johnson_to_gray_tb();
   reg  [3:0] johnson = 0;
   wire [2:0] gray;
 
-  johnson_to_gray #("SHEFFER") uut(.j(johnson), .g(gray));
+  johnson_to_gray #("PIRS") uut(.j(johnson), .g(gray));
 
   initial begin
     $display(" i | johnson | GRAY ");
