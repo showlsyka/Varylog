@@ -9,8 +9,8 @@ endmodule
 
  module johnson_to_gray(j,g);
 parameter Realization= "MDNF";
-input [3:0] j;
-output[2:0] g;
+input wire [3:0] j;
+output reg [2:0] g;
 
 generate
 if(Realization =="MDNF")
@@ -37,6 +37,21 @@ begin
 
   nmos(w2, gnd, nJ2); nmos(w2, gnd, j[0]);
   nmos(g[0], w2, j[2]); nmos(g[0], w2, nJ0);
+end
+else if(Realization == "Case") begin
+  always @* begin
+        case (j)
+            4'b0000: g = 3'b000; 
+            4'b0001: g = 3'b001; 
+            4'b0011: g = 3'b011; 
+            4'b0111: g = 3'b010; 
+            4'b1111: g = 3'b110; 
+            4'b1110: g = 3'b111; 
+            4'b1100: g = 3'b101; 
+            4'b1000: g = 3'b100; 
+            default: g = 3'bxxx; 
+        endcase
+    end
 end
 else if (Realization == "PIRS") begin
   assign g[2] = j[3];
@@ -71,12 +86,13 @@ end
   `timescale 1ns/1ns
   `define TD 5
 module johnson_to_gray_tb();
-  reg  [3:0] johnson = 0;
+  reg  [3:0] johnson;
   wire [2:0] gray;
 
-  johnson_to_gray #("PIRS") uut(.j(johnson), .g(gray));
+  johnson_to_gray #("Case") uut(.j(johnson), .g(gray));
 
   initial begin
+    johnson = 4'b0000;
     $display(" i | johnson | GRAY ");
     $display("----------------------");
 
