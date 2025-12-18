@@ -38,22 +38,20 @@ begin
   nmos(w2, gnd, nJ2); nmos(w2, gnd, j[0]);
   nmos(g[0], w2, j[2]); nmos(g[0], w2, nJ0);
 end
-else if (Realization == "Case") begin : GEN_CASE
-    reg [2:0] g_r;      
-    always @* begin
-        case (j)
-            4'b0000: g_r = 3'b000;
-            4'b0001: g_r = 3'b001;
-            4'b0011: g_r = 3'b011;
-            4'b0111: g_r = 3'b010;
-            4'b1111: g_r = 3'b110;
-            4'b1110: g_r = 3'b111;
-            4'b1100: g_r = 3'b101;
-            4'b1000: g_r = 3'b100;
-            default: g_r = 3'bxxx;
-        endcase
-    end
-    assign g = g_r;     
+else if (Realization == "Case") begin : GEN_CASE   
+  always @* begin
+          case (j)
+              4'b0000: g = 3'b000;
+              4'b0001: g = 3'b001;
+              4'b0011: g = 3'b011;
+              4'b0111: g = 3'b010;
+              4'b1111: g = 3'b110;
+              4'b1110: g = 3'b111;
+              4'b1100: g = 3'b101;
+              4'b1000: g = 3'b100;
+              default: g = 3'bxxx;
+          endcase
+      end    
 end
 else if (Realization == "PIRS") begin
   assign g[2] = j[3];
